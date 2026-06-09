@@ -1,9 +1,12 @@
-# K-bot-T1
+# K-Bot-T1 — Coder-A
 
-Bot name: K-bot-T1
-Warren agent: planner
-Role: Planning and decomposition (planner is plan-only so this card was committed by a generic worker under the K-bot-T1 identity)
+- Role: **Coder-A**
+- Owns: `src/**` (shared with Coder-B, alternating)
+- GitHub: K-Bot-T1 (id 290088768)
+- Warren agent: claude-code
 
-## Activity Log
+Authorship is routed by [`.team/roster.json`](../.team/roster.json) via
+`team-commit`. Design: `docs/superpowers/specs/2026-06-09-team-attribution-design.md`.
 
-2026-06-09 - first action: authored my own role card via a Warren run.
+## Action Log
+- 2026-06-09 — renamed to Coder-A; wired into the team-commit convention.
