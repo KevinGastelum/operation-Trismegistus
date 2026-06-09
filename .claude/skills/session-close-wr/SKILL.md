@@ -8,7 +8,7 @@ description: Close out a Warren-driven Claude Code session — capture a complet
 Goal: make the session safely DISPOSABLE. Produce a handoff so a fresh session (reading CLAUDE.md + memory + docs/HANDOFF.md + the task list) resumes with no re-discovery. Do ALL of:
 
 1. **Git state** — `git log --oneline -5`, current branch, `git status --porcelain`. Record the `main` HEAD SHA + any uncommitted work.
-2. **In-flight Warren runs (CRITICAL)** — for every dispatched run not yet verified+merged, record run IDs + states (GET /runs/{id}). The next session MUST resume polling/verifying these. (Export WARREN_API_TOKEN via sed from the warren .env; never echo it; jq for output.)
+2. **In-flight Warren runs (CRITICAL)** — for every dispatched run not yet verified+merged, record run IDs + states (GET /runs/{id}). The next session MUST resume polling/verifying these. (Token auto-loads via scripts/wr-*.sh + wr-env.sh — do NOT export by hand; jq for output.)
 3. **PRs** — which merged, which open/pending review.
 4. **Tasks** — snapshot TaskList: completed / in_progress / pending / backlog.
 5. **Blockers & human-action items** — rate-limit reset time, "delete branch X", "merge PR Y", "rotate Z", anything needing the human or their explicit auth (destructive remote ops, etc.).

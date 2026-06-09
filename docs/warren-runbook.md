@@ -53,7 +53,7 @@ export WARREN_API_TOKEN="...from the Warren UI..."   # only to override; never e
 CLI (if installed):
 
 ```bash
-warren add-project <set-your-git-remote-url> --default-branch main
+warren add-project {{REPO_URL}} --default-branch {{DEFAULT_BRANCH}}
 ```
 
 Otherwise register through the Warren UI, then confirm with
