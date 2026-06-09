@@ -189,3 +189,15 @@ Identical in container clone and local checkout. Keys: `defaultRole: claude-code
 - gh: gh auth status; gh api repos/KevinGastelum/freelance-revenue-os[...].
 
 *Phase 0 complete. Do not start Phase 1 until Q-A and Q-B are decided with the operator.*
+
+---
+
+## Resolution Update (2026-06-09)
+- **Q-G RESOLVED** — stale-token root cause was a Windows **User** env var (len 66) shadowing the valid .env
+  token (len 64). Deleted the User var; `wr-env.sh` hardened to treat the warren .env as canonical. Auth works
+  with no `unset`.
+- **Toolchain INSTALLED** — sd/cn/ml/plot/sapling (pinned to the running-warren image).
+- **os-warren v2** — scaffold is now a full bootstrapper (git init + toolchain doctor + planning dirs + Warren
+  registration). See `~/.os-kay/warren-scaffold/` and `docs/HANDOFF.md`.
+- **This repo REGISTERED** — prj_203c32jc0bqz (public, hasSeeds=true).
+- **Next** — execute Phase 1 of WARREN-PILOT-INTEGRATION.md (resolve Q-A: author a `.seeds/` plan, or use single dispatches).
