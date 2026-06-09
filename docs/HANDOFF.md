@@ -1,57 +1,67 @@
-# HANDOFF — operation-Trismegistus (Warren pilot)
+# HANDOFF — operation-Trismegistus (Warren multi-agent pilot)
 
-Updated: 2026-06-09 · main HEAD 37a1a7e (pushed, clean working tree)
+Updated: 2026-06-09 · main synced to origin (this session's final commit adds README + showcase doc + this handoff)
 
 ## Start here (single next action)
-Scaffold-repair + Warren bootstrap is DONE. **Next: execute the integration plan** —
-`docs/warren-integration/WARREN-PILOT-INTEGRATION.md`, beginning at **Phase 1** (Phase 0 is complete:
-`docs/warren-integration/PHASE-0-REPORT.md`). Resolve its open questions first, especially **Q-A**:
-the plan-run phase model needs a `.seeds/` PLAN. This repo now HAS `.seeds/` initialized but no plan yet —
-either author one (`sd plan ...`) or drive phases via single `warren.dispatch()` runs.
+**Verify the Warren push is unblocked, then run the multi-agent showcase.**
+1. Recreate Warren to load the staged `WARREN_AUTO_OPEN_PR=1`:
+   `docker compose up -d` from `~/Documents/Coding/warren-kay/warren` (0 in-flight runs — safe).
+2. Re-smoke to confirm the 403 is gone:
+   `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "Create a file smoke2-<ts>.txt containing ok and commit it"`,
+   monitor with `bash scripts/wr-events.sh <run-id>`, and confirm the reap reports **branchPushed:true + a prUrl**
+   (the Phase-1 smoke FAILED here with a GitHub 403 before the PAT fix).
+3. Then execute **docs/warren-integration/MULTI-AGENT-SHOWCASE.md** (the multi-agent GitHub workflow).
+   Optionally also run plan-run **pl-a703** (separate track).
 
 ## Current state
-- **This repo**: real git repo, pushed to https://github.com/KevinGastelum/operation-Trismegistus (PUBLIC),
-  registered in Warren as **prj_203c32jc0bqz** (hasSeeds=true). `.warren/project.json` carries the projectId.
-  Has `.seeds/.mulch/.canopy/.warren/.claude`; LF enforced via `.gitattributes`.
-- **Warren**: local Docker @ http://localhost:8080, v0.7.8, SQLite, healthy (readyz 12/12). 30 prior runs,
-  **0 in-flight** (nothing to resume).
-- **freelance-revenue-os** (prj_cj3a8t7sdxyn): the OLD rushed test project — user will DELETE it; reference only.
+- **This repo**: public git @ github.com/KevinGastelum/operation-Trismegistus, registered in Warren as
+  **prj_203c32jc0bqz** (hasSeeds=true). main synced to origin.
+- **Warren**: local Docker **v0.7.8** @ localhost:8080, SQLite, readyz **12/12** green. 0 in-flight runs.
+- **Vision (NEW this session)**: repo reframed as a **multi-agent harness dashboard** (see `README.md`) — one
+  human orchestrator drives a roster of AI agents in parallel, all observable in one place.
+- **Agent roster / identity mapping**: K-bot-T1 → `planner` · K-bot-T2 → `sapling` · K-bot-T3 → `pi` ·
+  LucraTitan → `claude-code` (2nd-device account) · Orchestrator → KevinGastelum (human).
 
-## Done this session (scaffold repair)
-1. **Token bug fixed** — root cause: a stale Windows **User** env var WARREN_API_TOKEN (len 66) shadowing the
-   valid `.env` token (len 64). Deleted the User var; hardened `wr-env.sh` so the warren `.env` is canonical
-   (OVERRIDES any pre-set value). Auth now works with no `unset` workaround.
-2. **@os-eco toolchain installed** (bun -g, pinned to the running-warren image): sd 0.5.4, cn 0.2.4, ml 0.10.6,
-   plot 0.4.0, sapling 0.3.2 — on PATH via ~/.bun/bin.
-3. **os-warren v2** (`~/.os-kay/warren-scaffold/os-warren.sh`, committed 596d65f) — FULL bootstrapper:
-   git init -> stamp -> toolchain doctor -> planning dirs (sd/ml/cn init) -> initial commit -> outward
-   (gh repo create + push + register via POST /projects + write projectId). Idempotent; confirms outward
-   actions unless `--yes`; flags `--local/--no-git/--no-tools/--no-planning/--no-register/--visibility/--dry-run`.
-   `os-warren.ps1` is now a THIN LAUNCHER over the `.sh` (one source of truth). Stamps a `.gitattributes` LF policy.
-4. **warren/wr host shims** in ~/.bun/bin -> run the CLI inside the container (where the DB/env live; dodges the
-   CRLF shebang). The @os-eco/warren-cli package is NOT on npm; host CLI = source-via-container only.
-5. Templates de-token-ized (removed "export WARREN_API_TOKEN by hand" guidance).
-
-## Codex (non-author-biased second opinion)
-codex-cli 0.136.0 IS installed + authed. The warm exec-helper (codex-consult-exec.sh) is BROKEN on Windows
-(`winpty: cannot start 'codex'`). USE HEADLESS: `codex exec --skip-git-repo-check "<brief>" < /dev/null`
-(model gpt-5.5, read-only sandbox, approval never). Approval gate per ~/.claude/rules/common/codex-consult.md.
+## Done this session
+1. **readyz 503 → 12/12**: `.warren/pr-template.md` used invalid fragment headings + `{{tokens}}` that v0.7.8
+   does NOT interpolate (would emit literal `{{...}}` into PRs) → rewrote as a trailer-only override. Added
+   `scripts/wr-readyz.sh` + `scripts/wr-refresh.sh`.
+2. **Phase 1 COMPLETE**: smoke `run_69tpfk51w6v9` SUCCEEDED — dispatch + event-streaming proven (19 events,
+   $0.06). Pre-flight green: warren.probe, gh (repo+workflow), sd 0.5.4.
+3. **qualityGate set** (Q-D): `bash -n scripts/*.sh` in `.warren/config.yaml`.
+4. **Seeds plan `pl-a703` authored** (Q-A, Codex-reviewed): parent `operation-Trismegistus-555f` + 3 SERIAL
+   children `4b5c` (STATUS.md + PILOT-SESSION-GUIDE.md) → `99f4` (OPERATOR-VOCAB.md + `just status`) →
+   `45e5` (phase-close gate). Pushed; Warren clone refreshed.
+5. **README.md** (new): harness-dashboard vision. **docs/warren-integration/MULTI-AGENT-SHOWCASE.md** (new):
+   next-session runbook for the multi-agent GitHub showcase.
 
 ## Blockers / human-action items
-- **Integration Q-A** (decide first): no `.seeds/` PLAN exists yet (see Start here).
-- **plot-cli Windows bug**: `@os-eco/plot-cli@0.4.0 init` fails (ENOENT `.plot\...json.lock`, backslash path).
-  `.plot` dropped from scaffold auto-init; create on-demand once fixed/patched.
-- **warren clone CRLF**: `warren-kay/warren/src/cli/main.ts` ships a CRLF shebang -> `bun\r`; in-container `wr`
-  only works via `bun run`. Enforce LF in that clone if you rebuild the Docker image.
-- Phase-close merges: repo `allow_auto_merge=false` -> use direct `gh pr merge --squash` (no `--auto`).
+- **Warren push 403 (resolves Phase-0 Q-F) — operator FIXED 2026-06-09, NEEDS VERIFY**: Warren's container
+  `GITHUB_TOKEN` is a fine-grained PAT (`github_pat_`, len 93) that lacked write to the new repo; operator added
+  operation-Trismegistus (Contents + Pull requests: R/W) to it. Confirm via the re-smoke (Start here step 2).
+  If still 403 → recheck the PAT's repository access + permissions. Warren git auth = `git insteadOf`
+  x-access-token (warren src `supervisor/git-credentials.ts:65`).
+- **`WARREN_AUTO_OPEN_PR=1` staged** in warren `.env` but NOT applied — needs the container recreate (step 1).
+- **`pi` agent capability unknown** — confirm before authoring `agents/K-bot-T3.md` in the showcase.
+
+## Open design notes
+- Phase-close gate = **pilot-sole-merger** for v1 (no branch protection; repo `allow_auto_merge=false` → use
+  direct `gh pr merge --squash` after review).
+- Per-agent git identity = set via each run's task prompt (`git config user.name/user.email`) — see the SHOWCASE
+  doc. `@warren.local` emails show as distinct commit authors but won't link to GitHub profiles.
+- No `wr-plan-run.sh` yet — add one (or raw `POST /plan-runs {project, planId:"pl-a703", agent:"claude-code"}`)
+  to run the plan.
+- Dispatch prompts must be **ASCII-only** — em-dashes/Unicode mangle through the Windows/MSYS pipe.
 
 ## Key recipes (not already in CLAUDE.md)
-- Scaffold a NEW project end-to-end:  `os-warren --yes --visibility public /path/to/proj`
-- Local only / skip register:          `os-warren --local ...`  /  `os-warren --no-register ...`
-- Codex review:                        `codex exec --skip-git-repo-check "<brief>" < /dev/null`
-- Warren admin (container):            `wr doctor`  (or `docker exec warren bash -lc 'cd /app && bun run src/cli/main.ts <cmd>'`)
-- Register a repo manually:            `POST /projects {gitUrl, defaultBranch}` (idempotent: GET /projects, match gitUrl first)
+- readyz detail:            `bash scripts/wr-readyz.sh`
+- refresh Warren clone:     `bash scripts/wr-refresh.sh`  (run after pushing .warren/ or .seeds/ changes)
+- dispatch a run:           `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "<ASCII prompt>"`
+- monitor to terminal:      `bash scripts/wr-events.sh <run-id>`  (follow-streams; background it)
+- single status:            `bash scripts/wr-run-status.sh <run-id>`
+- Codex consult (headless): `codex exec --skip-git-repo-check "<brief>" < /dev/null`
+- seeds plan:               `sd plan show pl-a703` · `sd list` · `sd ready`
 
 ## Restart
-Run `/clear`, then `session-start-wr` rehydrates from CLAUDE.md + memory + this file.
-Start at: execute WARREN-PILOT-INTEGRATION Phase 1 (resolve Q-A/Q-B with the operator first).
+`/clear` → `session-start-wr` rehydrates from CLAUDE.md + memory + this file.
+Start at: **verify push unblock (recreate Warren + re-smoke) → docs/warren-integration/MULTI-AGENT-SHOWCASE.md**.
