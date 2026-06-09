@@ -57,3 +57,98 @@ export function parseArgs(argv: string[]): Args {
   }
   return a;
 }
+
+function hasHead(): boolean {
+  return git(["rev-parse", "--verify", "-q", "HEAD"]).code === 0;
+}
+
+function hasStagedChanges(): boolean {
+  return git(["diff", "--cached", "--quiet"]).code !== 0;
+}
+
+function assertNoDirtySubmodules(): void {
+  if (!existsSync(".gitmodules")) return;
+  const r = git(["submodule", "status", "--recursive"]);
+  const dirty = r.out.split("\n").filter((l) => /^[+U-]/.test(l));
+  if (dirty.length) {
+    throw new Error(`unsynced submodule(s):\n${dirty.join("\n")}\ncommit/sync submodule content first`);
+  }
+}
+
+function changedFiles(): ChangedFile[] {
+  const r = git(["status", "--porcelain=v1", "-z", "--untracked-files=all", "--renames"]);
+  if (r.code !== 0) throw new Error(`git status failed: ${r.err}`);
+  return parseStatus(r.out);
+}
+
+function emptyIndex(): void {
+  if (hasHead()) git(["reset", "-q"]);
+  else git(["read-tree", "--empty"]);
+}
+
+function stage(paths: string[]): void {
+  const input = new TextEncoder().encode(paths.join("\0"));
+  const r = git(["--literal-pathspecs", "add", "-A", "--pathspec-from-file=-", "--pathspec-file-nul"], input);
+  if (r.code !== 0) throw new Error(`git add failed: ${r.err}`);
+}
+
+function commit(author: Author, msg: string): void {
+  const r = git(["commit", "-q", `--author=${author.name} <${author.email}>`, "-m", `[${author.label}] ${msg}`]);
+  if (r.code !== 0) throw new Error(`git commit failed: ${r.err}`);
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(Bun.argv.slice(2));
+  const roster = await loadRoster(".team/roster.json");
+  const files = changedFiles();
+  if (files.length === 0) {
+    console.log("team-commit: nothing to commit");
+    return;
+  }
+
+  const lastCoder = (git(["config", "--local", "--get", "team.last-coder"]).out.trim() || undefined) as RoleKey | undefined;
+  const plan = planCommits(files, roster, { coderPin: args.coder, lastCoder });
+
+  if (args.dryRun) {
+    console.log("team-commit plan (no changes made):");
+    for (const b of plan.buckets) {
+      console.log(`  [${b.author.label}] ${b.author.name} <${b.author.email}>`);
+      for (const p of b.paths) console.log(`      ${p}`);
+    }
+    return;
+  }
+
+  if (args.msg === undefined) throw new Error('commit message required, e.g. team-commit "msg"');
+  if (hasHead() && hasStagedChanges() && !args.all) {
+    throw new Error("index has staged changes; rerun with --all to commit the whole working tree");
+  }
+  assertNoDirtySubmodules();
+
+  if (args.solo) {
+    const dom = dominantBucket(plan.buckets);
+    const all = plan.buckets.flatMap((b) => b.paths);
+    emptyIndex();
+    stage(all);
+    commit(dom.author, args.msg);
+  } else {
+    emptyIndex();
+    for (const b of plan.buckets) {
+      stage(b.paths);
+      commit(b.author, args.msg);
+    }
+    if (plan.nextLastCoder) git(["config", "--local", "team.last-coder", plan.nextLastCoder]);
+  }
+
+  if (args.push) {
+    const r = git(["push"]);
+    if (r.code !== 0) throw new Error(`git push failed: ${r.err}`);
+  }
+  console.log("team-commit: done");
+}
+
+if (import.meta.main) {
+  main().catch((e: Error) => {
+    console.error(`team-commit: ${e.message}`);
+    process.exit(1);
+  });
+}
