@@ -57,6 +57,10 @@ Full vocabulary: `docs/warren-integration/OPERATOR-VOCAB.md` (≥10 phrases, onc
 
 ## Autopilot Loop (Phase Dispatch)
 
+> **Human-gated plan-runs:** The default merge window is ~30 min per child. For plans with a Codex phase-gate (human review required before merge), pass `merge-timeout-ms=0` to disable the timeout:
+> `bash scripts/wr-plan-run.sh <project> <plan> claude-code 0`
+> Without this, the coordinator may report `failed (child_pr_merge_timeout)` even though all PRs merge correctly.
+
 ```
 1. warren.probe()  ← abort if unreachable
 2. Confirm next phase plan exists in .seeds/ (sd plan show pl-NXXX)

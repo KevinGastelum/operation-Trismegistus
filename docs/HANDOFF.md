@@ -26,7 +26,7 @@ Updated: 2026-06-09 · main @ **229032b** · clean, **synced to origin** · 0 in
 - Warm Codex consult channel broken (winpty). Use headless: `cat brief.txt | codex exec --skip-git-repo-check --sandbox read-only`.
 
 ## Key recipes (not in CLAUDE.md)
-- **Launch a plan-run:** `bash scripts/wr-plan-run.sh <projectId> <planId> [agent]` (children read server-side from committed `.seeds/`; `bash scripts/wr-refresh.sh <projectId>` first).
+- **Launch a plan-run:** `bash scripts/wr-plan-run.sh <projectId> <planId> [agent] [merge-timeout-ms]` — pass `0` to disable merge timeout for human-gated gates (children read server-side from committed `.seeds/`; `bash scripts/wr-refresh.sh <projectId>` first).
 - **Plan-run status:** `bash scripts/wr-plan-run-status.sh <plan-run-id>` (child run ids also work with `wr-events.sh`/`wr-run-status.sh`; plan-run-level needs the API directly).
 - **Drive a plan-run:** strictly serial — merge each child PR (`gh pr merge <#> --squash --delete-branch`, direct, no `--auto`) to advance. **30-min/child merge window** — raise `WARREN_PLAN_RUN_MERGE_TIMEOUT_MS` on the server for human-gated gates.
 - **Retrofit team-commit into any repo:** `team-init <dir>` (alias) or `bash ~/.os-kay/warren-scaffold/team-init.sh <dir>`.
