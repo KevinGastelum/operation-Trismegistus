@@ -30,3 +30,26 @@ test("authorOf resolves name + email + label", () => {
 test("normalize converts backslashes to forward slashes", () => {
   expect(normalize("src\\a\\b.ts")).toBe("src/a/b.ts");
 });
+
+import { routeFile } from "./routing.ts";
+
+test("routeFile: tests beat src (auditor precedence over coder)", () => {
+  expect(routeFile("src/app.test.ts", roster.routes)).toBe("auditor");
+  expect(routeFile("src/app.spec.tsx", roster.routes)).toBe("auditor");
+  expect(routeFile("src/__snapshots__/a.snap", roster.routes)).toBe("auditor");
+});
+
+test("routeFile: src, docs, agents, catch-all", () => {
+  expect(routeFile("src/app.ts", roster.routes)).toBe("coder");
+  expect(routeFile("packages/ui/src/x.ts", roster.routes)).toBe("coder");
+  expect(routeFile("docs/guide.md", roster.routes)).toBe("captain");
+  expect(routeFile("packages/ui/docs/x.md", roster.routes)).toBe("captain");
+  expect(routeFile("agents/LucraTitan.md", roster.routes)).toBe("captain");
+  expect(routeFile("README.md", roster.routes)).toBe("orchestrator");
+  expect(routeFile("package.json", roster.routes)).toBe("orchestrator");
+  expect(routeFile("justfile", roster.routes)).toBe("orchestrator");
+});
+
+test("routeFile normalizes backslash paths", () => {
+  expect(routeFile("src\\a.ts", roster.routes)).toBe("coder");
+});

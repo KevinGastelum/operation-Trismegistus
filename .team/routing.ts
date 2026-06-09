@@ -56,3 +56,14 @@ export async function loadRoster(path: string): Promise<Roster> {
   }
   return (await file.json()) as Roster;
 }
+
+// First-match-wins route resolution on a /-normalized path.
+export function routeFile(path: string, routes: Route[]): RouteRole {
+  const p = normalize(path);
+  for (const route of routes) {
+    for (const g of route.globs) {
+      if (new Bun.Glob(g).match(p)) return route.role;
+    }
+  }
+  return "orchestrator"; // defensive; routes always end with a ** catch-all
+}
