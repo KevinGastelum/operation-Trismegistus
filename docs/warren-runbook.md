@@ -26,7 +26,8 @@ override still works — an already-set `WARREN_API_TOKEN` wins:
 ```bash
 export WARREN_BASE_URL="http://localhost:8080"       # optional; this is the default
 export WARREN_ENV_FILE="/abs/path/to/warren/.env"    # only if auto-load can't find it
-export WARREN_API_TOKEN="...from the Warren UI..."   # only to override; never echo this
+# Token auto-loads from the warren .env via scripts/wr-env.sh (it OVERRIDES any pre-set value).
+# To point at a different .env: set WARREN_ENV_FILE=/abs/path/.env  (do NOT set WARREN_API_TOKEN by hand).
 ```
 
 > If the `warren`/`wr` CLI is not on PATH (Warren running only as the Docker
