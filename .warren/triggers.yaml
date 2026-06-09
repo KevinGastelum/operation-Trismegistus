@@ -1,0 +1,14 @@
+# Warren scheduled triggers for operation-Trismegistus.
+#
+# DISABLED BY DEFAULT. Every trigger stays commented until the owner enables it.
+# Enabling cron requires explicit human approval.
+#
+# - id: nightly-maintenance-review
+#   kind: cron
+#   cron: "0 3 * * *"
+#   timezone: America/Mazatlan
+#   role: claude-code
+#   prompt: >
+#     Review this repo for stale docs, failing tests, and simple maintenance
+#     improvements. Open a branch with minimal, safe fixes only. Do not touch
+#     secrets or .env files. Respect the safety rules in CLAUDE.md.

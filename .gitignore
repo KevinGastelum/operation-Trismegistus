@@ -1,0 +1,19 @@
+
+# >>> os-warren >>>
+# Secrets — never commit.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Warren — local runtime artifacts (keep .warren/*.yaml + pr-template.md tracked).
+.warren/tmp/
+.warren/*.log
+
+# Claude Code — personal/local overrides (shared .claude/settings.json stays tracked).
+.claude/settings.local.json
+
+# MSYS2 / Git Bash crash dumps.
+*.stackdump
+# <<< os-warren <<<
