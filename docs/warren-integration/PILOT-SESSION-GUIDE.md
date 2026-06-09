@@ -78,12 +78,19 @@ Full vocabulary: `docs/warren-integration/OPERATOR-VOCAB.md` (≥10 phrases, onc
 
 **The pilot MUST NOT merge this PR automatically.** Steps:
 
-1. Collect the phase's merged PR diff:
+1. Collect the phase's cumulative diff:
    ```bash
+   # At plan-run launch: record the pre-phase base SHA and save it to STATUS.md
+   git rev-parse main   # → <pre-phase-sha>
+
+   # At the gate: show everything merged since the phase started
+   git diff <pre-phase-sha>..HEAD
+
+   # If you didn't record the SHA, fall back to diffing each phase PR individually:
    gh pr list --repo KevinGastelum/operation-Trismegistus \
      --state merged --base main \
-     --json url,title,additions,deletions --limit 20
-   gh pr diff <phase-close-pr-url>
+     --json number,title,additions,deletions --limit 20
+   gh pr diff <pr-number>   # repeat for each phase PR
    ```
 2. Send to Codex companion: "Review this phase diff. Flag CRITICAL/HIGH issues: correctness bugs, security problems, missed requirements."
 3. **If Codex unavailable** → STOP. Do not merge. Surface to operator.
