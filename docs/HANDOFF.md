@@ -1,67 +1,43 @@
 # HANDOFF — operation-Trismegistus (Warren multi-agent pilot)
 
-Updated: 2026-06-09 · main synced to origin (this session's final commit adds README + showcase doc + this handoff)
+Updated: 2026-06-09 · main @ **d6877bb** · clean, synced to origin · Warren clone synced
 
 ## Start here (single next action)
-**Verify the Warren push is unblocked, then run the multi-agent showcase.**
-1. Recreate Warren to load the staged `WARREN_AUTO_OPEN_PR=1`:
-   `docker compose up -d` from `~/Documents/Coding/warren-kay/warren` (0 in-flight runs — safe).
-2. Re-smoke to confirm the 403 is gone:
-   `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "Create a file smoke2-<ts>.txt containing ok and commit it"`,
-   monitor with `bash scripts/wr-events.sh <run-id>`, and confirm the reap reports **branchPushed:true + a prUrl**
-   (the Phase-1 smoke FAILED here with a GitHub 403 before the PAT fix).
-3. Then execute **docs/warren-integration/MULTI-AGENT-SHOWCASE.md** (the multi-agent GitHub workflow).
-   Optionally also run plan-run **pl-a703** (separate track).
-
-## Current state
-- **This repo**: public git @ github.com/KevinGastelum/operation-Trismegistus, registered in Warren as
-  **prj_203c32jc0bqz** (hasSeeds=true). main synced to origin.
-- **Warren**: local Docker **v0.7.8** @ localhost:8080, SQLite, readyz **12/12** green. 0 in-flight runs.
-- **Vision (NEW this session)**: repo reframed as a **multi-agent harness dashboard** (see `README.md`) — one
-  human orchestrator drives a roster of AI agents in parallel, all observable in one place.
-- **Agent roster / identity mapping**: K-bot-T1 → `planner` · K-bot-T2 → `sapling` · K-bot-T3 → `pi` ·
-  LucraTitan → `claude-code` (2nd-device account) · Orchestrator → KevinGastelum (human).
+**Showcase + attribution are DONE.** Optional next tracks (pick one):
+1. **Dispatch pl-a703** — serial 3-seed plan (see Backlog). Use agent `claude-code` (Warren builtins are flaky here — see Findings).
+2. **Investigate sapling/pi burrow failure** so the roster bots can do genuinely distinct work.
+3. **Pivot to freelance-revenue-os** — operator's stated top priority (ROI checkpoint 2026-06-14).
 
 ## Done this session
-1. **readyz 503 → 12/12**: `.warren/pr-template.md` used invalid fragment headings + `{{tokens}}` that v0.7.8
-   does NOT interpolate (would emit literal `{{...}}` into PRs) → rewrote as a trailer-only override. Added
-   `scripts/wr-readyz.sh` + `scripts/wr-refresh.sh`.
-2. **Phase 1 COMPLETE**: smoke `run_69tpfk51w6v9` SUCCEEDED — dispatch + event-streaming proven (19 events,
-   $0.06). Pre-flight green: warren.probe, gh (repo+workflow), sd 0.5.4.
-3. **qualityGate set** (Q-D): `bash -n scripts/*.sh` in `.warren/config.yaml`.
-4. **Seeds plan `pl-a703` authored** (Q-A, Codex-reviewed): parent `operation-Trismegistus-555f` + 3 SERIAL
-   children `4b5c` (STATUS.md + PILOT-SESSION-GUIDE.md) → `99f4` (OPERATOR-VOCAB.md + `just status`) →
-   `45e5` (phase-close gate). Pushed; Warren clone refreshed.
-5. **README.md** (new): harness-dashboard vision. **docs/warren-integration/MULTI-AGENT-SHOWCASE.md** (new):
-   next-session runbook for the multi-agent GitHub showcase.
+1. **Warren push 403 RESOLVED** (Phase-0 Q-F): recreated the warren container to load staged `WARREN_AUTO_OPEN_PR=1` + the PAT grant; smoke run auto-opened a PR (branchPushed:true + prUrl). Smoke PR closed, branch deleted.
+2. **Multi-agent showcase COMPLETE**: `agents/{K-bot-T1,K-bot-T2,K-bot-T3,LucraTitan}.md` role cards; 4 PRs merged as KevinGastelum.
+3. **Per-bot avatar attribution COMPLETE**: re-attributed all 4 card commits to real GitHub accounts via 2 clean force-push rewrites (operator-authorized). GitHub linkage API-confirmed, avatars yes. LucraTitan added as a collaborator. Contributors sidebar populates within ~24h.
+
+## Current state
+- **Repo**: public, main @ **d6877bb**, working tree clean. No open PRs; no stray `warren/*` branches.
+- **Warren**: v0.7.8 @ localhost:8080, healthy, **0 in-flight runs**, `WARREN_AUTO_OPEN_PR=1` live. Project `prj_203c32jc0bqz`, clone synced to d6877bb.
+- **Bot GitHub accounts** (attribution = author email `<id>+<login>@users.noreply.github.com`, NOT the push token):
+  K-Bot-T1=290088768 · K-bot-T2=292117888 · K-bot-T3=292116934 · LucraTitan=268125578 · KevinGastelum=97716634.
+
+## KEY FINDINGS (also in memory: warren-agent-reality)
+- **Only `claude-code` reliably runs in this Warren env.** `planner` is plan-only (`dropped_commit`); `sapling`/`pi` fail at the burrow layer (`no_model_response`; "burrow unreachable at unix:/var/run/burrow.sock") even paced/isolated → environmental, not transient. So all 4 cards were `claude-code` fallbacks under the bot git identities; only LucraTitan=claude-code is a native match.
+- **`--squash` strips commit authorship** → collapses to the merger. Use `--merge` or a force-push author rewrite to set/keep distinct authors. GitHub links a commit to an account by **author email** (id-based noreply works even with email privacy); collaborator status is NOT required for avatars on a public repo.
 
 ## Blockers / human-action items
-- **Warren push 403 (resolves Phase-0 Q-F) — operator FIXED 2026-06-09, NEEDS VERIFY**: Warren's container
-  `GITHUB_TOKEN` is a fine-grained PAT (`github_pat_`, len 93) that lacked write to the new repo; operator added
-  operation-Trismegistus (Contents + Pull requests: R/W) to it. Confirm via the re-smoke (Start here step 2).
-  If still 403 → recheck the PAT's repository access + permissions. Warren git auth = `git insteadOf`
-  x-access-token (warren src `supervisor/git-credentials.ts:65`).
-- **`WARREN_AUTO_OPEN_PR=1` staged** in warren `.env` but NOT applied — needs the container recreate (step 1).
-- **`pi` agent capability unknown** — confirm before authoring `agents/K-bot-T3.md` in the showcase.
+- None blocking — all bot accounts now exist; attribution done.
+- Operator preference (memory: prefer-parallel-agents): use parallel agents/subagents aggressively to speed work.
 
-## Open design notes
-- Phase-close gate = **pilot-sole-merger** for v1 (no branch protection; repo `allow_auto_merge=false` → use
-  direct `gh pr merge --squash` after review).
-- Per-agent git identity = set via each run's task prompt (`git config user.name/user.email`) — see the SHOWCASE
-  doc. `@warren.local` emails show as distinct commit authors but won't link to GitHub profiles.
-- No `wr-plan-run.sh` yet — add one (or raw `POST /plan-runs {project, planId:"pl-a703", agent:"claude-code"}`)
-  to run the plan.
-- Dispatch prompts must be **ASCII-only** — em-dashes/Unicode mangle through the Windows/MSYS pipe.
+## Backlog
+- **pl-a703** (serial): parent `operation-Trismegistus-555f` + 3 children `4b5c` (STATUS.md + PILOT-SESSION-GUIDE.md) → `99f4` (OPERATOR-VOCAB.md + `just status`) → `45e5` (phase-close gate). Dispatch: `POST /plan-runs {project:prj_203c32jc0bqz, planId:"pl-a703", agent:"claude-code"}` (no wr-plan-run.sh yet). Pilot merges 4b5c then 99f4; HALT at 45e5 → Codex review of cumulative diff → merge if clean.
+- Optional: sapling/pi burrow-failure investigation (`docker logs warren`).
 
 ## Key recipes (not already in CLAUDE.md)
-- readyz detail:            `bash scripts/wr-readyz.sh`
-- refresh Warren clone:     `bash scripts/wr-refresh.sh`  (run after pushing .warren/ or .seeds/ changes)
-- dispatch a run:           `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "<ASCII prompt>"`
-- monitor to terminal:      `bash scripts/wr-events.sh <run-id>`  (follow-streams; background it)
-- single status:            `bash scripts/wr-run-status.sh <run-id>`
+- re-attribute a commit to a bot account: rewrite author to `<id>+<login>@users.noreply.github.com` (id via `gh api users/<login> --jq .id`), then `git push --force-with-lease` (operator must authorize any main force-push).
+- verify linkage: `gh api repos/KevinGastelum/operation-Trismegistus/commits/<sha> --jq .author.login`
+- run status: `bash scripts/wr-run-status.sh <run-id>` — fields are TOP-LEVEL (`.state`/`.prUrl`), NOT under `.run.` (that wrapper is only on the POST /runs response).
+- dispatch: `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "<ASCII prompt>"` · readyz: `bash scripts/wr-readyz.sh` · refresh clone: `bash scripts/wr-refresh.sh`
 - Codex consult (headless): `codex exec --skip-git-repo-check "<brief>" < /dev/null`
-- seeds plan:               `sd plan show pl-a703` · `sd list` · `sd ready`
 
 ## Restart
 `/clear` → `session-start-wr` rehydrates from CLAUDE.md + memory + this file.
-Start at: **verify push unblock (recreate Warren + re-smoke) → docs/warren-integration/MULTI-AGENT-SHOWCASE.md**.
+Start at: **optional pl-a703 / sapling-pi investigation / pivot to freelance-revenue-os**.
