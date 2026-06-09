@@ -1,43 +1,40 @@
-# HANDOFF — operation-Trismegistus (Warren multi-agent pilot)
+# HANDOFF — operation-Trismegistus
 
-Updated: 2026-06-09 · main @ **d6877bb** · clean, synced to origin · Warren clone synced
+Updated: 2026-06-09 · main @ **06bbeaa** · clean, **synced to origin** · 0 in-flight Warren runs
 
-## Start here (single next action)
-**Showcase + attribution are DONE.** Optional next tracks (pick one):
-1. **Dispatch pl-a703** — serial 3-seed plan (see Backlog). Use agent `claude-code` (Warren builtins are flaky here — see Findings).
-2. **Investigate sapling/pi burrow failure** so the roster bots can do genuinely distinct work.
-3. **Pivot to freelance-revenue-os** — operator's stated top priority (ROI checkpoint 2026-06-14).
+## Start here (queued tracks — all optional, pick one)
+**team-commit is shipped** (built, merged to main, pushed, GitHub-verified).
+1. **Global `team-init` alias + bake `.team/` into the os-warren scaffold** so the team travels into every new project by default.
+2. **Initialize Trismegistus-Dashboard history via team-commit** — `.team/` + justfile are installed but UNCOMMITTED there; `--dry-run` previewed clean (src→Coder-A, rest→Orchestrator). Safe (catch-all routes every file; no remote yet).
+3. **NEW "team workflow" project** — kickoff prompt ready at `docs/team-workflow-project-kickoff.md`; create a repo + paste it into a fresh session. Build LOCALLY (Warren optional).
+4. **Re-test Warren sapling/pi** — `readyz` now shows `burrow_reachable: true` (was failing); if they run now, the multi-agent roster is unblocked.
+5. Global priority (time-box to 2026-06-14): **freelance-revenue-os**.
 
-## Done this session
-1. **Warren push 403 RESOLVED** (Phase-0 Q-F): recreated the warren container to load staged `WARREN_AUTO_OPEN_PR=1` + the PAT grant; smoke run auto-opened a PR (branchPushed:true + prUrl). Smoke PR closed, branch deleted.
-2. **Multi-agent showcase COMPLETE**: `agents/{K-bot-T1,K-bot-T2,K-bot-T3,LucraTitan}.md` role cards; 4 PRs merged as KevinGastelum.
-3. **Per-bot avatar attribution COMPLETE**: re-attributed all 4 card commits to real GitHub accounts via 2 clean force-push rewrites (operator-authorized). GitHub linkage API-confirmed, avatars yes. LucraTitan added as a collaborator. Contributors sidebar populates within ~24h.
+## Done this session (2026-06-09)
+- **Built `team-commit`** — portable per-repo commit-attribution by changed path: routes a working tree into ONE authored commit per owner (docs→Captain, src→Coder-A/B alternating, tests→Auditor, rest→Orchestrator). Bun+TS (`Bun.Glob` + `Bun.spawn`). 15 passing tests.
+  - Files: `.team/roster.json` · `.team/routing.ts` · `.team/team-commit.ts` (+ `.test.ts`) · `scripts/team-init.sh` · `justfile`.
+  - Flags: `--solo` (atomic, dominant author) · `--coder a|b` · `--push` · `--dry-run` · `--all` (override clean-index gate).
+  - Codex-hardened (GO-WITH-CHANGES): clean-index gate, NUL literal pathspecs, rename old+new staged together, commit order decoupled from match precedence (config→src→tests→docs), submodule refusal, monorepo/`__snapshots__` default globs.
+  - Spec: `docs/superpowers/specs/2026-06-09-team-attribution-design.md` · Plan: `docs/superpowers/plans/2026-06-09-team-attribution.md`.
+- **Role renames** (now the roster source of truth): LucraTitan=Captain/Coordinator · K-Bot-T1=Coder-A · K-bot-T2=Coder-B · K-bot-T3=Auditor · Kevin=Orchestrator. `agents/*.md` cards refreshed.
+- **Dogfooded + verified:** the card refresh committed as `[Captain]` authored by LucraTitan; pushed; `gh api` confirms `author.login=LucraTitan`. Multi-author history works on the public repo.
+- **Installed into Trismegistus-Dashboard** (preview only — uncommitted there).
 
-## Current state
-- **Repo**: public, main @ **d6877bb**, working tree clean. No open PRs; no stray `warren/*` branches.
-- **Warren**: v0.7.8 @ localhost:8080, healthy, **0 in-flight runs**, `WARREN_AUTO_OPEN_PR=1` live. Project `prj_203c32jc0bqz`, clone synced to d6877bb.
-- **Bot GitHub accounts** (attribution = author email `<id>+<login>@users.noreply.github.com`, NOT the push token):
-  K-Bot-T1=290088768 · K-bot-T2=292117888 · K-bot-T3=292116934 · LucraTitan=268125578 · KevinGastelum=97716634.
-
-## KEY FINDINGS (also in memory: warren-agent-reality)
-- **Only `claude-code` reliably runs in this Warren env.** `planner` is plan-only (`dropped_commit`); `sapling`/`pi` fail at the burrow layer (`no_model_response`; "burrow unreachable at unix:/var/run/burrow.sock") even paced/isolated → environmental, not transient. So all 4 cards were `claude-code` fallbacks under the bot git identities; only LucraTitan=claude-code is a native match.
-- **`--squash` strips commit authorship** → collapses to the merger. Use `--merge` or a force-push author rewrite to set/keep distinct authors. GitHub links a commit to an account by **author email** (id-based noreply works even with email privacy); collaborator status is NOT required for avatars on a public repo.
+## Git / Warren state
+- Repo public, **main @ 06bbeaa**, clean, synced to origin/main. No open PRs; `feat/team-attribution` merged (ff) + deleted. 12 commits pushed.
+- Warren healthy @ localhost:8080, **0 in-flight runs**, `WARREN_AUTO_OPEN_PR=1` live, **`burrow_reachable: true`** (changed from last session — re-test sapling/pi).
 
 ## Blockers / human-action items
-- None blocking — all bot accounts now exist; attribution done.
-- Operator preference (memory: prefer-parallel-agents): use parallel agents/subagents aggressively to speed work.
+- None blocking. Dashboard's first commit is your call (track #2).
+- GateGuard was toggled off mid-session for the approved build, then **restored** (deleted `.claude/settings.local.json`). See memory [[gateguard-ecc]].
 
-## Backlog
-- **pl-a703** (serial): parent `operation-Trismegistus-555f` + 3 children `4b5c` (STATUS.md + PILOT-SESSION-GUIDE.md) → `99f4` (OPERATOR-VOCAB.md + `just status`) → `45e5` (phase-close gate). Dispatch: `POST /plan-runs {project:prj_203c32jc0bqz, planId:"pl-a703", agent:"claude-code"}` (no wr-plan-run.sh yet). Pilot merges 4b5c then 99f4; HALT at 45e5 → Codex review of cumulative diff → merge if clean.
-- Optional: sapling/pi burrow-failure investigation (`docker logs warren`).
-
-## Key recipes (not already in CLAUDE.md)
-- re-attribute a commit to a bot account: rewrite author to `<id>+<login>@users.noreply.github.com` (id via `gh api users/<login> --jq .id`), then `git push --force-with-lease` (operator must authorize any main force-push).
-- verify linkage: `gh api repos/KevinGastelum/operation-Trismegistus/commits/<sha> --jq .author.login`
-- run status: `bash scripts/wr-run-status.sh <run-id>` — fields are TOP-LEVEL (`.state`/`.prUrl`), NOT under `.run.` (that wrapper is only on the POST /runs response).
-- dispatch: `bash scripts/wr-run.sh claude-code prj_203c32jc0bqz "<ASCII prompt>"` · readyz: `bash scripts/wr-readyz.sh` · refresh clone: `bash scripts/wr-refresh.sh`
-- Codex consult (headless): `codex exec --skip-git-repo-check "<brief>" < /dev/null`
+## Key recipes (not in CLAUDE.md)
+- commit a change by team: `bun .team/team-commit.ts "msg" [--solo|--coder a|b|--push|--dry-run|--all]` · or `just commit "msg"`.
+- preview routing: `bun .team/team-commit.ts --dry-run` · `just team-status`.
+- install into any repo: `bash scripts/team-init.sh <target-dir>`.
+- tests: `cd .team && bun test` (15).
+- verify GitHub attribution: `gh api repos/KevinGastelum/operation-Trismegistus/commits/<sha> --jq .author.login`.
 
 ## Restart
 `/clear` → `session-start-wr` rehydrates from CLAUDE.md + memory + this file.
-Start at: **optional pl-a703 / sapling-pi investigation / pivot to freelance-revenue-os**.
+Start at: **a queued track above**.
