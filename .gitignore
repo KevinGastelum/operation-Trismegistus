@@ -17,3 +17,6 @@
 # MSYS2 / Git Bash crash dumps.
 *.stackdump
 # <<< os-warren <<<
+
+# Scratch briefs / temporary agent artifacts.
+.tmp/
