@@ -67,3 +67,74 @@ export function routeFile(path: string, routes: Route[]): RouteRole {
   }
   return "orchestrator"; // defensive; routes always end with a ** catch-all
 }
+
+export interface Bucket {
+  routeRole: RouteRole;
+  author: Author;
+  paths: string[]; // includes rename oldPath entries
+}
+
+export interface CommitPlan {
+  buckets: Bucket[]; // in commit (dependency) order
+  nextLastCoder?: RoleKey;
+}
+
+export interface PlanOpts {
+  coderPin?: "a" | "b";
+  lastCoder?: RoleKey;
+}
+
+// Commit (dependency) order — decoupled from match precedence so an
+// intermediate commit is more likely to build.
+const COMMIT_ORDER: RouteRole[] = ["orchestrator", "coder", "auditor", "captain"];
+
+// Tie-break order for --solo dominant selection (match precedence).
+const PRECEDENCE: RouteRole[] = ["auditor", "captain", "coder", "orchestrator"];
+
+function resolveCoder(rotate: RoleKey[], pin: "a" | "b" | undefined, lastCoder: RoleKey | undefined): RoleKey {
+  if (pin === "a") return "coder-a";
+  if (pin === "b") return "coder-b";
+  if (lastCoder && rotate.includes(lastCoder)) {
+    return rotate[(rotate.indexOf(lastCoder) + 1) % rotate.length];
+  }
+  return rotate[0];
+}
+
+export function planCommits(files: ChangedFile[], roster: Roster, opts: PlanOpts = {}): CommitPlan {
+  const groups = new Map<RouteRole, string[]>();
+  for (const f of files) {
+    const role = routeFile(f.path, roster.routes);
+    const arr = groups.get(role) ?? [];
+    arr.push(f.path);
+    if (f.oldPath) arr.push(f.oldPath);
+    groups.set(role, arr);
+  }
+
+  const coderRoute = roster.routes.find((r) => r.role === "coder");
+  const rotate = coderRoute?.rotate ?? ["coder-a", "coder-b"];
+
+  let nextLastCoder: RoleKey | undefined;
+  const buckets: Bucket[] = [];
+  for (const routeRole of COMMIT_ORDER) {
+    const paths = groups.get(routeRole);
+    if (!paths || paths.length === 0) continue;
+    let author: Author;
+    if (routeRole === "coder") {
+      const coderKey = resolveCoder(rotate, opts.coderPin, opts.lastCoder);
+      author = authorOf(coderKey, roster);
+      nextLastCoder = coderKey;
+    } else {
+      author = authorOf(routeRole as RoleKey, roster);
+    }
+    buckets.push({ routeRole, author, paths });
+  }
+  return { buckets, nextLastCoder };
+}
+
+export function dominantBucket(buckets: Bucket[]): Bucket {
+  if (buckets.length === 0) throw new Error("no buckets");
+  return [...buckets].sort((a, b) => {
+    if (b.paths.length !== a.paths.length) return b.paths.length - a.paths.length;
+    return PRECEDENCE.indexOf(a.routeRole) - PRECEDENCE.indexOf(b.routeRole);
+  })[0];
+}

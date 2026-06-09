@@ -53,3 +53,35 @@ test("routeFile: src, docs, agents, catch-all", () => {
 test("routeFile normalizes backslash paths", () => {
   expect(routeFile("src\\a.ts", roster.routes)).toBe("coder");
 });
+
+import { planCommits, dominantBucket } from "./routing.ts";
+
+test("planCommits: buckets in dependency order; rename old+new together", () => {
+  const files = [
+    { path: "docs/a.md" },
+    { path: "src/b.ts" },
+    { path: "src/b.test.ts" },
+    { path: "package.json" },
+    { path: "src/new.ts", oldPath: "src/old.ts" },
+  ];
+  const plan = planCommits(files, roster);
+  expect(plan.buckets.map((b) => b.routeRole)).toEqual(["orchestrator", "coder", "auditor", "captain"]);
+  const coder = plan.buckets.find((b) => b.routeRole === "coder")!;
+  expect(coder.paths).toContain("src/new.ts");
+  expect(coder.paths).toContain("src/old.ts");
+  expect(coder.author.label).toBe("Coder-A");
+});
+
+test("planCommits: coder alternates from lastCoder; pin overrides", () => {
+  const f = [{ path: "src/a.ts" }];
+  expect(planCommits(f, roster, { lastCoder: "coder-a" }).buckets[0].author.label).toBe("Coder-B");
+  expect(planCommits(f, roster, { lastCoder: "coder-b" }).buckets[0].author.label).toBe("Coder-A");
+  expect(planCommits(f, roster, {}).buckets[0].author.label).toBe("Coder-A");
+  expect(planCommits(f, roster, { coderPin: "b", lastCoder: "coder-b" }).buckets[0].author.label).toBe("Coder-B");
+  expect(planCommits(f, roster, { lastCoder: "coder-a" }).nextLastCoder).toBe("coder-b");
+});
+
+test("dominantBucket: most files wins", () => {
+  const plan = planCommits([{ path: "src/a.ts" }, { path: "src/b.ts" }, { path: "docs/c.md" }], roster);
+  expect(dominantBucket(plan.buckets).routeRole).toBe("coder");
+});
