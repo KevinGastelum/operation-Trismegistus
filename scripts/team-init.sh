@@ -33,7 +33,7 @@ fi
 # Warn-only verification of roster accounts against GitHub.
 if command -v gh >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   while read -r login id; do
-    real="$(gh api "users/$login" --jq .id 2>/dev/null || echo "")"
+    real="$(gh api "users/$login" --jq .id 2>/dev/null | tr -d '[:space:]')"
     if [ -n "$real" ] && [ "$real" != "$id" ]; then
       echo "warn: roster $login id=$id but GitHub reports $real"
     fi
