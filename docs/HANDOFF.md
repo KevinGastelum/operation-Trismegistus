@@ -1,37 +1,50 @@
 # HANDOFF — operation-Trismegistus
 
-Updated: 2026-06-09 · main @ **229032b** · clean, **synced to origin** · 0 in-flight Warren runs
+Updated: 2026-06-09 · main @ **855e8ea** · clean, **synced to origin** · 0 in-flight Warren runs
 
 ## Start here (queued — pick one)
-1. **Item 3 — init Trismegistus-Dashboard git history via team-commit.** `.team/` + justfile are installed there but UNCOMMITTED; `--dry-run` previewed clean (src→Coder-A, rest→Orchestrator). Safe; no remote yet.
-2. **Item 4 — re-test Warren sapling/pi** (`burrow_reachable: true`).
-3. **Follow-ups from the pl-a703 gate:** `9f78` (fix gate-diff instructions — Codex HIGH), `a790` (raise/disable plan-run merge-timeout for human-gated gates).
-4. **Decide parent seed `555f`:** close as validated, or re-run pl-a703 clean (apply a790's timeout fix first for a clean `succeeded`).
-5. Global priority (time-box to 2026-06-14): **freelance-revenue-os**.
 
-## Done this session (2026-06-09)
-- **Item 1 — baked team-commit into the os-warren scaffold** (`~/.os-kay/warren-scaffold`): added `templates/team/` + `templates/justfile.team-snippet`, stamping in `os-warren.sh` `phase_stamp()` (new repos get `.team/` + `just commit` by default), a scaffold-resident `team-init.sh`, and a **global `team-init` alias** (`~/.zshrc`) to retrofit existing repos. Created + pushed **private** repo `KevinGastelum/os-kay-scaffold` (scaffold @ 053cc6a). Verified: stamp + retrofit + idempotent re-run + end-to-end routing (src→Coder-A, docs→Captain, tests→Auditor).
-- **Item 2 — VALIDATED Warren's plan-run coordinator** (first-ever run) via Seeds plan **pl-a703** on `prj_203c32jc0bqz`: 3 child seeds serial, merge-gated advance, pilot-only merges, Codex phase gate. PRs #6/#7/#8 merged → artifacts on main: `STATUS.md`, `docs/warren-integration/{PILOT-SESSION-GUIDE,OPERATOR-VOCAB,PHASE-2-COMPLETE}.md`, `just status`.
-  - **Caveat:** plan-run terminal = `failed` (`child_pr_merge_timeout`) — the human-gated Codex review on seed 3 exceeded Warren's default 30-min/child merge window. Work unaffected (all PRs merged). Fix → `a790`.
-  - Codex gate found 1 HIGH (docs only) → `9f78`.
-  - Added `scripts/wr-plan-run.sh` + `scripts/wr-plan-run-status.sh` (Warren had no plan-run CLI wrappers).
+1. **Phase 3 — Harden Canopy Agent System Prompts** ← next Warren phase for this repo. No Seeds plan authored yet — design + `sd plan submit` before dispatching. Pass `merge-timeout-ms=0` for human-gated gates.
+2. **freelance-revenue-os** — global priority, ROI checkpoint **2026-06-14**. Next: ingest real leads (see `freelance-revenue-os/docs/lead-sources.md`). Warren project: `prj_cj3a8t7sdxyn`.
+3. **Trismegistus-Dashboard** — initial team-commit done (`0718999`). No remote yet; create GH repo + push when ready.
+
+## Done this session (2026-06-09, session 2)
+
+- **`555f`** closed — parent pilot seed validated (all 3 child seeds already merged).
+- **`9f78`** — fixed gate diff instructions in `PILOT-SESSION-GUIDE.md` + `PHASE-2-COMPLETE.md` to pin pre-phase SHA (`git diff <pre-phase-sha>..HEAD`). Commit `61b1c5a`.
+- **`a790`** — `scripts/wr-plan-run.sh` now accepts optional 4th arg `merge-timeout-ms`; documented in `PILOT-SESSION-GUIDE.md` + this file. Commit `855e8ea`.
+- **Trismegistus-Dashboard** — initial team-commit done via `just commit`; 3 role-attributed commits (Orchestrator + Coder-A + Captain @ `0718999`).
+- **freelance-revenue-os** — committed + pushed session-5 research docs (`lead-sources.md`, `niche-strategy.md`, `source-catalog.md`). Main @ `14be736`.
+- **Item 4 (sapling/pi)** — confirmed done: `burrow_reachable: true`; pi-runtime agents render correctly.
+
+## Done prior sessions (2026-06-09, session 1)
+
+- **Item 1** — baked team-commit into os-warren scaffold; created `KevinGastelum/os-kay-scaffold` (@ 053cc6a).
+- **Item 2** — VALIDATED Warren plan-run coordinator end-to-end via pl-a703 (3 seeds, serial, Codex gate, pilot-only merges). PRs #6/#7/#8 merged. Artifacts on main: `STATUS.md`, `PILOT-SESSION-GUIDE.md`, `OPERATOR-VOCAB.md`, `PHASE-2-COMPLETE.md`, `just status`.
 
 ## Git / Warren state
-- main @ **229032b**, clean, synced. No open PRs. PRs #6/#7/#8 merged + branches deleted.
-- Warren healthy @ localhost:8080, `burrow_reachable: true`, **0 in-flight runs**. Plan-run `plnr_e7hmbsyr3qzs` terminal (failed-via-timeout; all 3 child runs succeeded + merged).
-- Host GITHUB_TOKEN push scope on this repo **VERIFIED** (fine-grained PAT, push:true) — Phase 0 Q-F resolved.
+
+- **operation-Trismegistus:** main @ `855e8ea`, clean, synced. 0 open PRs. Seeds queue empty.
+- **Trismegistus-Dashboard:** main @ `0718999`, clean. **No remote.**
+- **freelance-revenue-os:** main @ `14be736`, clean, synced. Warren project `prj_cj3a8t7sdxyn`.
+- Warren healthy @ localhost:8080, `burrow_reachable: true`. 0 in-flight runs. pi/sapling runtime confirmed.
 
 ## Blockers / human-action items
-- None blocking. `555f` close-vs-rerun is your call.
+
+- **Trismegistus-Dashboard remote:** create GitHub repo + `git remote add origin <url>` + push when ready.
+- **Phase 3 plan:** no Seeds plan authored yet — needed before dispatch.
 - Warm Codex consult channel broken (winpty). Use headless: `cat brief.txt | codex exec --skip-git-repo-check --sandbox read-only`.
 
 ## Key recipes (not in CLAUDE.md)
-- **Launch a plan-run:** `bash scripts/wr-plan-run.sh <projectId> <planId> [agent] [merge-timeout-ms]` — pass `0` to disable merge timeout for human-gated gates (children read server-side from committed `.seeds/`; `bash scripts/wr-refresh.sh <projectId>` first).
-- **Plan-run status:** `bash scripts/wr-plan-run-status.sh <plan-run-id>` (child run ids also work with `wr-events.sh`/`wr-run-status.sh`; plan-run-level needs the API directly).
-- **Drive a plan-run:** strictly serial — merge each child PR (`gh pr merge <#> --squash --delete-branch`, direct, no `--auto`) to advance. **30-min/child merge window** — raise `WARREN_PLAN_RUN_MERGE_TIMEOUT_MS` on the server for human-gated gates.
-- **Retrofit team-commit into any repo:** `team-init <dir>` (alias) or `bash ~/.os-kay/warren-scaffold/team-init.sh <dir>`.
+
+- **Launch a plan-run:** `bash scripts/wr-plan-run.sh <projectId> <planId> [agent] [merge-timeout-ms]` — pass `0` for human-gated gates; run `bash scripts/wr-refresh.sh <projectId>` first.
+- **Plan-run status:** `bash scripts/wr-plan-run-status.sh <plan-run-id>`.
+- **Drive a plan-run:** strictly serial — `gh pr merge <#> --squash --delete-branch` (no `--auto`) to advance.
+- **Gate diff:** record `git rev-parse main` → `<pre-phase-sha>` at launch; use `git diff <pre-phase-sha>..HEAD` at the gate.
+- **Retrofit team-commit:** `team-init <dir>` alias or `bash ~/.os-kay/warren-scaffold/team-init.sh <dir>`.
 - `just status` — Warren health + in-flight/ready seeds + STATUS.md.
 
 ## Restart
+
 `/clear` → `session-start-wr` rehydrates from CLAUDE.md + memory + this file.
-Start at: **item 3 (Dashboard init)** or a queued track above.
+Start at: **Phase 3 plan design** or pivot to **freelance-revenue-os** (higher ROI priority, deadline 2026-06-14).
