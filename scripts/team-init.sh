@@ -37,7 +37,7 @@ if command -v gh >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
     if [ -n "$real" ] && [ "$real" != "$id" ]; then
       echo "warn: roster $login id=$id but GitHub reports $real"
     fi
-  done < <(jq -r '.roles[] | "\(.login) \(.id)"' "$TARGET/.team/roster.json")
+  done < <(jq -r '.roles[] | "\(.login) \(.id)"' "$TARGET/.team/roster.json" | tr -d '\r')
 fi
 
 echo "team-init: installed into $TARGET"
