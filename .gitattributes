@@ -4,3 +4,13 @@
 .mulch/expertise/*.jsonl merge=union
 .canopy/prompts.jsonl merge=union
 .canopy/schemas.jsonl merge=union
+# Line-ending policy: LF everywhere except Windows-native script types.
+# Prevents CRLF from breaking shebangs (e.g. #!/usr/bin/env bun -> bun\r) when a
+# repo is checked out on Windows (core.autocrlf=true) and read by Linux tools
+# (Warren's Docker COPY, bwrap sandboxes, MSYS shebangs).
+* text=auto eol=lf
+*.sh  text eol=lf
+*.bash text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
