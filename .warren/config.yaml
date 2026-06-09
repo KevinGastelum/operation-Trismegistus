@@ -9,6 +9,11 @@ defaultRole: claude-code
 defaultBranch: main
 runBranchPrefix: warren
 
+# Injected into every sandbox as $WARREN_QUALITY_GATE (Phase 0 Q-D).
+# This repo is docs + bash (no test suite); a zero-dependency real gate that
+# syntax-checks every script. Workers must exit it green before committing.
+qualityGate: "bash -n scripts/*.sh"
+
 # Optional provider/model defaults (commented; set intentionally).
 # defaultProvider: anthropic
 # defaultModel: claude-sonnet-4-6
