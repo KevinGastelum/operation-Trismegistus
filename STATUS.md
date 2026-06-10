@@ -1,24 +1,13 @@
 # STATUS — operation-Trismegistus
 
-Updated: 2026-06-09
+Updated: 2026-06-10
 
-## Phase
-
-Current: **Phase 2 — Install Pilot-Layer Artifacts** ✅ COMPLETE (plan-run validator)
-Plan: pl-a703 — all 3 seeds merged to main; coordinator **VALIDATED** (serial dispatch, merge-gated advance, pilot-only merges, Codex phase gate). Coordinator terminal state = `failed` via `child_pr_merge_timeout` (the human-gated Codex review on seed 3 exceeded the default 30-min merge window — see `a790`); the work itself completed cleanly.
-
-## Done
+## Phases Done
 
 - [x] Phase 0: Inspection complete → `docs/warren-integration/PHASE-0-REPORT.md`
-  - Warren v0.7.8 + 1 local commit; local Docker; plan-runs confirmed; SQLite
-  - Stale-token root cause found + fixed (`wr-env.sh` hardened)
-- [x] Phase 1: Topology confirmed + toolchain installed
-  - Toolchain installed: `sd` / `cn` / `ml` / `plot` / sapling (pinned to warren image)
-  - This repo registered: `prj_203c32jc0bqz` (public, hasSeeds=true)
-  - Seeds plan authored: `.seeds/issues.jsonl` with plan pl-a703
-  - Multi-agent team-commit built + dogfooded → 15 tests, merged to main
-  - Role cards refreshed: Captain (LucraTitan) / Coder-A (K-Bot-T1) / Coder-B (K-bot-T2) / Auditor (K-bot-T3)
-- [x] Phase 2: Pilot-layer artifacts via plan-run pl-a703 (detail below)
+- [x] Phase 1: Topology confirmed + toolchain installed (sd/cn/ml/plot/sapling; team-commit; role cards)
+- [x] Phase 2: Pilot-layer artifacts via plan-run pl-a703 (STATUS.md, PILOT-SESSION-GUIDE.md, OPERATOR-VOCAB.md, just status)
+- [x] Phase 3: Canopy agent system prompts hardened via plan-run pl-5b3d (agents/*.md + PHASE-3-DESIGN.md)
 
 ## Phase 2 — Completed
 
@@ -33,10 +22,33 @@ Plan: pl-a703 — all 3 seeds merged to main; coordinator **VALIDATED** (serial 
 - Operator decision: merge as-is + file follow-ups. All 3 PRs merged by the pilot (no auto-merge).
 - Coordinator marked the plan-run `failed` via `child_pr_merge_timeout` (human-gated review exceeded the 30-min window) → fix tracked as `a790`. Work + artifacts unaffected.
 
-## Next
+## Phase
 
-- Phase 2 follow-ups: `9f78` (fix gate-diff instructions), `a790` (raise/disable plan-run merge-timeout for human-gated gates)
-- Phase 3 — Harden Canopy Agent System Prompts
+Current: **Phase 3 — Harden Canopy Agent System Prompts** ✅ COMPLETE
+Plan: pl-5b3d — 2 seeds merged to main; coordinator terminal state = `failed` via `child_pr_merge_timeout` (known: gate merge exceeded 30-min window — same as Phase 2/a790); work completed cleanly.
+
+## Done
+
+- [x] Phase 3: Canopy agent system prompts hardened via plan-run pl-5b3d (detail below)
+
+## Phase 3 — Completed
+
+- [x] seed 1/2: `operation-Trismegistus-4294` — hardened all 4 agents/*.md + `PHASE-3-DESIGN.md` (PR #9, merged)
+- [x] seed 2/2: `operation-Trismegistus-71be` — phase-close gate marker `PHASE-3-COMPLETE.md` (PR #10, merged)
+
+## Phase 3 — Gate Outcome (2026-06-10)
+
+- Pilot HALTED at seed 2; ran Codex review of cumulative phase diff (`bcc221e..HEAD`, 7 files).
+- Codex found **1 HIGH** (docs only): agents/*.md ownership sections omit `packages/*/src/**` (coders) and `packages/*/docs/**` (captain) from `.team/roster.json` → tracked as `a770`. Zero impact today (no packages/ dir).
+- Operator decision: merge as-is + file follow-up `a770`. Both PRs merged by pilot (no auto-merge).
+- Coordinator terminal state = `failed` via `child_pr_merge_timeout` (expected for human-gated gate; artifacts unaffected).
+
+## Phase 2 Follow-ups (done)
+
+- [x] `9f78` — fix gate-diff instructions (pin pre-phase SHA). Commit `61b1c5a`.
+- [x] `a790` — wr-plan-run.sh accepts merge-timeout-ms arg. Commit `855e8ea`.
+
+## Next
 
 ## Blockers
 
