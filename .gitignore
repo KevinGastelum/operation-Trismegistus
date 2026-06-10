@@ -11,8 +11,24 @@
 .warren/tmp/
 .warren/*.log
 
-# Claude Code — personal/local overrides (shared .claude/settings.json stays tracked).
+# Claude Code — local session artifacts; only settings.json is tracked.
 .claude/settings.local.json
+.claude/.credentials.json
+.claude/.last-cleanup
+.claude/backups/
+.claude/projects/
+.claude/sessions/
+.claude/shell-snapshots/
+.claude.json
+
+# Bun runtime cache.
+.bun/
+
+# Warren burrow runtime artifact (rendered per-run; not project state).
+.canopy/agent.json
+
+# Burrow git identity overlay.
+.gitconfig.burrow
 
 # MSYS2 / Git Bash crash dumps.
 *.stackdump
