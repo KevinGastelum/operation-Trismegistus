@@ -96,10 +96,26 @@ Use Warren for isolated branch-return work, larger or risky tasks, scheduled
 automation, previews, and anything that should not mutate your local tree.
 Do not use it for tiny edits, secret handling, or tight human back-and-forth.
 
+## Before a Warren dispatch
+
+1. Read the Warren contract in `CLAUDE.md` and the project docs.
+2. `bash scripts/wr-health.sh`
+3. `bash scripts/wr-projects.sh`
+4. Confirm the correct project id.
+5. Check for `.seeds/`, `.mulch/`, `.plot/`, `.canopy/` and use them if present.
+
+## Dispatch prompt requirements
+
+objective · relevant files/dirs · constraints · explicit non-goals ·
+validation/test command (`bash -n scripts/*.sh`) · branch/PR expectation
+(auto-merge only via the verifier-gated, path-guarded policy in `CLAUDE.md`) ·
+"do not expose secrets/.env" · "keep changes minimal and reviewable".
+
 ## Safety
 
 - Never print, echo, or commit `WARREN_API_TOKEN`; never paste `.env` contents.
-- Never auto-merge a Warren branch — review first.
+- Auto-merge a Warren branch only via the verifier-gated, path-guarded merge
+  policy in `CLAUDE.md`; otherwise review first.
 - Never enable cron triggers without explicit human approval.
 - A local guard (`.claude/hooks/warren-guard.js`) blocks the most obvious
   token/`.env` leaks and Warren project deletes. Best-effort, not a guarantee.

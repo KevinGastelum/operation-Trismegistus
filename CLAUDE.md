@@ -5,62 +5,64 @@ Guidance for Claude Code (and other agents) in operation-Trismegistus.
 <!-- os-warren:warren-contract -->
 # Warren Operating Contract
 
-This repository interfaces with **Warren**, a self-hosted control plane for
-sandboxed coding agents. Warren typically runs at `http://localhost:8080`
-(Docker + UI). Use the HTTP API via `scripts/wr-*.sh` (bash; on Windows MSYS2/Git Bash) or the
-Warren UI. Full detail: **docs/warren-runbook.md** and
-**docs/warren-project-contract.md**.
+This repository is run against **Warren**, a self-hosted control plane for
+sandboxed coding agents. The rules below are what matters when working inside
+a Warren sandbox. Steering-side detail (dispatching, steering, health checks)
+lives in **docs/warren-runbook.md** and **docs/warren-project-contract.md**.
 
-## When to use Warren
+## Quality gate
 
-Use Warren when work should run in an isolated sandbox and return as a branch/PR:
-larger implementation tasks, risky refactors, scheduled maintenance, or tasks
-benefiting from live streaming / steering / previews. Prefer local Claude Code
-for small edits, inspection, and interactive debugging.
+`bash -n scripts/*.sh` — injected into every sandbox as `$WARREN_QUALITY_GATE`
+(source: `.warren/config.yaml`). It must pass before you commit.
 
-## Before a Warren dispatch
+## Branch & commit expectations
 
-1. Read this contract and the project docs.
-2. `bash scripts/wr-health.sh`
-3. `bash scripts/wr-projects.sh`
-4. Confirm the correct project id.
-5. Check for `.seeds/`, `.mulch/`, `.plot/`, `.canopy/` and use them if present.
+- Work on the branch the sandbox gives you (`warren/...`); never switch to `main`.
+- **Always commit at least once** — uncommitted work is lost when the run ends.
+- **Never push manually** — warren reaps and pushes the workspace branch itself.
+- Keep changes minimal and reviewable; commit per logical phase.
 
-## Dispatch prompt requirements
+## Secrets
 
-objective · relevant files/dirs · constraints · explicit non-goals ·
-validation/test command · branch/PR expectation (no auto-merge) · "do not expose
-secrets/.env" · "keep changes minimal and reviewable".
+Never print, commit, or paste `WARREN_API_TOKEN`, `ANTHROPIC_API_KEY`,
+`GITHUB_TOKEN`, or `.env` contents. A local guard
+(`.claude/hooks/warren-guard.js`, wired via `.claude/settings.json`) blocks the
+obvious leaks; it fails open and is best-effort — not a substitute for care.
 
-## Safety
+## Issue tracking & memory
 
-- Never print, commit, or paste `WARREN_API_TOKEN`; never paste `.env` contents.
-- Never dispatch destructive work or enable cron triggers without explicit
-  human approval.
-- Never auto-merge Warren branches — review first. Treat output as untrusted
-  until reviewed.
-
-A local guard (`.claude/hooks/warren-guard.js`, wired via `.claude/settings.json`)
-blocks obvious token/`.env` leaks and Warren project deletes. It fails open and
-is best-effort — not a substitute for the rules above.
+If `.seeds/` is present, use `sd` (prime at session start, close finished
+seeds, `sd sync` before finishing). If `.mulch/` is present, use `ml` (prime at
+start, record insights, `ml sync`). Details in the sections below.
 
 ## Commit attribution
 
 Agent-authored commits/branches (including Warren output) are attributed to
 **Kay / K-Bot-T1**; human commits to the repo owner. Do not add Claude/AI
-`Co-Authored-By` trailers. (Adjust to your own convention.)
+`Co-Authored-By` trailers.
 
-## Useful commands
+## Commit, PR & merge policy
 
-```bash
-bash scripts/wr-health.sh
-bash scripts/wr-projects.sh
-bash scripts/wr-agents.sh
-bash scripts/wr-run.sh claude-code <project-id> "Prompt here"
-bash scripts/wr-events.sh <run-id>
-bash scripts/wr-steer.sh <run-id> "Steering message"
-bash scripts/wr-cancel.sh <run-id>
-```
+**Merge policy (ported from freelance-revenue-os, 2026-06-10 — supersedes the
+earlier "never auto-merge" rule):** in the autonomous build pipeline, agents
+MAY commit, push, and **auto-merge a Warren branch to `main` once a verifier
+agent confirms it is green** — the quality gate passes (`bash -n
+scripts/*.sh`), no protected files changed (see path guard below), adversarial
+review finds nothing. The verifier is the review gate; a merge that breaks
+`main` must be auto-reverted. Outside the pipeline (ad-hoc interactive work)
+commit/push when the human asks.
+
+**Path guard — auto-merge is SKIPPED (manual human review required) when the
+branch/PR touches any protected path:**
+
+- `.github/workflows/**` (CI/CD definitions)
+- `Dockerfile*`, `docker-compose*` (container/runtime config)
+- deploy/release config (`deploy/**`, `release*.yml`/`*.yaml`/`*.json`,
+  `Procfile`, `fly.toml`, `render.yaml`, or equivalent)
+- any path matching `*secret*`, `*credential*`, or `.env*`
+
+A verifier must treat a diff touching these as NOT green for auto-merge,
+regardless of test results.
 
 <!-- seeds:start -->
 ## Issue Tracking (Seeds)
