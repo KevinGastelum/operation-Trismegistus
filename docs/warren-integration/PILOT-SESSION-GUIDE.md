@@ -91,7 +91,7 @@ Full vocabulary: `docs/warren-integration/OPERATOR-VOCAB.md` (≥10 phrases, onc
    git diff <pre-phase-sha>..HEAD
 
    # If you didn't record the SHA, fall back to diffing each phase PR individually:
-   gh pr list --repo KevinGastelum/operation-Trismegistus \
+   gh pr list --repo K-incorporate/operation-Trismegistus \
      --state merged --base main \
      --json number,title,additions,deletions --limit 20
    gh pr diff <pr-number>   # repeat for each phase PR
