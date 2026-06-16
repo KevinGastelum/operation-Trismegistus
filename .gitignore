@@ -11,12 +11,10 @@
 .warren/tmp/
 .warren/*.log
 
-# Claude Code — local session artifacts; only settings.json is tracked.
-# Steering-side material stays local-only so headless Warren sandboxes
-# (which clone this repo) never auto-load it.
-.claude/settings.local.json
-.claude/skills/
-.claude/hooks/suggest-handoff.js
+# Claude Code — local session settings & custom skills.
+!.claude/settings.local.json
+!.claude/skills/
+!.claude/hooks/suggest-handoff.js
 .claude/.credentials.json
 .claude/.last-cleanup
 .claude/backups/
