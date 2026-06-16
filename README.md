@@ -2,9 +2,9 @@
 
 **A high-impact control plane and multi-agent coordination harness — the cockpit where one human orchestrator runs a roster of autonomous AI agents in parallel, observed and routed in one place.**
 
-[![Agentic Engineering](https://img.shields.io/badge/Agentic%20Engineering-Active-blueviolet?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
-[![Runtime: Warren Sandbox](https://img.shields.io/badge/Runtime-Warren%20Sandbox-emerald?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
-[![Git Router: Bun/TS](https://img.shields.io/badge/Git%20Router-Bun%20%2F%20TS-orange?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
+[![Agentic Engineering](https://img.shields.io/badge/Agentic%20Engineering-Active-blueviolet?style=for-the-badge)](https://github.com/KevinGastelum/operation-Trismegistus)
+[![Runtime: Warren Sandbox](https://img.shields.io/badge/Runtime-Warren%20Sandbox-emerald?style=for-the-badge)](https://github.com/KevinGastelum/operation-Trismegistus)
+[![Git Router: Bun/TS](https://img.shields.io/badge/Git%20Router-Bun%20%2F%20TS-orange?style=for-the-badge)](https://github.com/KevinGastelum/operation-Trismegistus)
 
 ---
 
