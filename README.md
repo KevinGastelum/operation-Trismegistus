@@ -1,92 +1,123 @@
-# operation-Trismegistus
+# 🪐 operation-Trismegistus
 
-**A one-stop-shop harness dashboard for multi-agent coordination — the control plane where one human orchestrator runs a roster of AI agents in parallel, all observable in one place.**
+**A high-impact control plane and multi-agent coordination harness — the cockpit where one human orchestrator runs a roster of autonomous AI agents in parallel, observed and routed in one place.**
 
----
-
-## What it is
-
-operation-Trismegistus is the **control plane / dashboard** for orchestrating multiple AI coding agents at once. Instead of babysitting one agent in one terminal, a human orchestrator speaks intent in natural language and the harness fans the work out across a roster of agents working in parallel — each sandboxed, each on its own task, all surfaced through a single living view of who is doing what, where, and why.
-
-The vision is a **harness**: a thin coordination layer that sits on top of a sandboxed-agent runtime ([Warren](#how-it-works)) and turns it into a cockpit. Plans become parallel work. Tasks get dispatched, monitored, and merged. Goals, roles, configs, logs, and memories all live in one place. The orchestrator never types a raw API call or watches a wall of separate consoles — they drive the fleet from one seat.
-
-> **Status note (grounding):** this is a working **pilot foundation**, not a finished product. The integration design, the HTTP control scripts, the project config, and a staged execution plan are all in place; Phase 0 and Phase 1 of the rollout are complete. See [Current status](#current-status) for exactly what exists today versus the broader vision.
+[![Agentic Engineering](https://img.shields.io/badge/Agentic%20Engineering-Active-blueviolet?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
+[![Runtime: Warren Sandbox](https://img.shields.io/badge/Runtime-Warren%20Sandbox-emerald?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
+[![Git Router: Bun/TS](https://img.shields.io/badge/Git%20Router-Bun%20%2F%20TS-orange?style=for-the-badge)](https://github.com/K-incorporate/operation-Trismegistus)
 
 ---
 
-## Capabilities
+## 👁️ Overview
 
-The dashboard is organized around the capability domains a human needs to coordinate a fleet of agents:
+`operation-Trismegistus` is a custom-engineered **control plane and dashboard** designed to orchestrate multiple sandboxed AI coding agents in parallel. Instead of babysitting single agent loops in isolated terminals, the operator directs a roster of specialized agents working concurrently, driven by structured plans and coordinated through a local git-native routing engine.
 
-| Domain | What it covers |
-| :--- | :--- |
-| **Coordination** | One orchestrator, many agents — the harness keeps them from colliding and keeps the human in the loop. |
-| **Orchestration** | Translate operator intent into dispatches, steers, and merges across the roster. |
-| **Communication** | Natural-language intent in; plain-text state out. Mid-run steering messages reach a running agent. |
-| **Plans** | Structured, decomposed plans (`.seeds/`) that become serialized, dependency-aware work. |
-| **Tasks** | Each plan step is a scoped task dispatched to an agent, tracked from open → in-flight → merged. |
-| **Goals** | The orchestrator sets the objective; the harness drives phases toward it with human gates at the boundaries. |
-| **Projects** | Multiple repos registered as projects, each with its own config, branch policy, and roster. |
-| **Logs** | Live event streams (NDJSON) from every run — stdout, state transitions, costs — captured and surfaced. |
-| **Memories** | Durable project expertise and session handoffs persist across sessions, reaped back from agent runs. |
-| **Roles** | Named agent roles (planner, sapling, pi, claude-code, …) map to the right runtime for each job. |
-| **Configs** | Per-project `.warren/` config: quality gate, branch prefix, merge policy, interactive runtimes. |
-| **Observation** | A single living state surface — done / in-flight / next / blockers / costs — without opening a UI. |
-| **Parallel work** | Multiple agents (and multiple devices) working simultaneously, coordinated from one control plane. |
-| **Long-running tasks** | Phase-level plan-runs that span many serial sub-tasks and survive interruption (idempotent resume). |
-| **Tool use** | Agents run inside a real sandbox with full tool access (edit, shell, git) — scoped, not crippled. |
-| **Shared state** | Plans, configs, memories, and status live in the repo as the shared substrate every agent reads. |
-| **Active state** | What is running *right now* — which agent, which task, which PR — always queryable at a glance. |
+This repository demonstrates advanced **Agentic Engineering** patterns: git-native issue tracking, structured agent memory/expertise persistence, autonomous sandbox execution, path-based git commit routing, and human-in-the-loop review gates.
 
 ---
 
-## The multi-agent model
+## 📐 Architecture & Feedback Loop
 
-A single human **orchestrator** coordinates a roster of named agents. Each agent maps to a runtime role; the orchestrator assigns work, observes progress, and approves the gates.
+The diagram below illustrates how intent flows from the human orchestrator into structured work, runs in isolated environments, and is reassembled dynamically by the commit router into a collaborative git timeline.
 
-| Agent | Role | Runtime |
-| :--- | :--- | :--- |
-| **K-bot-T1** | Planner | Warren `planner` agent |
-| **K-bot-T2** | Builder | Warren `sapling` agent |
-| **K-bot-T3** | Specialist | Warren `pi` agent |
-| **LucraTitan** | Worker (second device) | Warren `claude-code` agent, on a separate device's account |
-| **Orchestrator** | Human-in-command | **KevinGastelum** |
-
-The roster is deliberately heterogeneous: planning, building, and specialist roles run as distinct agents, and a second device (LucraTitan) contributes its own `claude-code` worker — so the fleet spans roles *and* machines while still being driven from one dashboard.
-
----
-
-## Current status
-
-**Foundation in place. Phase 0 and Phase 1 complete.** This repo currently holds the **Warren pilot integration foundation**:
-
-- **`docs/warren-integration/`** — the self-contained design package (`WARREN-PILOT-INTEGRATION.md`) and the completed **Phase 0 ground-truth report** (`PHASE-0-REPORT.md`). Phase 0 verified the live Warren instance end-to-end (version, endpoints, agent registry, plan-run support, event streaming, auth); Phase 1 (topology + registration) is done.
-- **`scripts/wr-*.sh`** — HTTP API helpers for driving Warren (health, projects, agents, run, events, steer, cancel, refresh) at `http://localhost:8080`. The token auto-loads via `wr-env.sh`; it is never exported by hand.
-- **`.warren/`** — this project's Warren config (quality gate, branch policy, **manual-merge / never auto-merge**, interactive runtimes) plus PR template and triggers (all cron triggers disabled for safety).
-- **`.seeds/`** — a staged execution plan, **`pl-a703`** ("Pilot-layer artifacts / plan-run validator"): three serial child seeds that build the remaining pilot-layer artifacts *and* serve as the first end-to-end validation of Warren's plan-run coordinator and the phase-close review gate — dogfooding the harness on its own control repo.
-
-This repo is registered with Warren as project **`prj_203c32jc0bqz`** (public). The next step is to execute `pl-a703`.
-
-What is **not** built yet: the full live dashboard surface, the complete parallel-roster automation, and the broader capability set above are the **vision** this foundation is being built toward — not claims about what runs today.
+```mermaid
+flowchart TD
+    Orchestrator([Human Orchestrator]) -->|Sets Goals / Reviews PRs| Cockpit[Local Cockpit / Harness]
+    Cockpit -->|Decomposes Intent| Seeds[(Seeds Git-Native Issue Tracker)]
+    Cockpit -->|Dispatches Sandbox Runs| Warren[Warren Runtime Sandbox]
+    Warren -->|Agent Executes Scoped Task| Workspace[Workspace Changes]
+    Workspace -->|Runs team-commit.ts| GitRouter{Git-Native Router}
+    GitRouter -->|Path: docs/**| Captain[Captain: LucraTitan]
+    GitRouter -->|Path: src/**| Coders[Coders: K-bot-T1 / K-bot-T2]
+    GitRouter -->|Path: test/**| Auditor[Auditor: K-bot-T3]
+    GitRouter -->|Path: config/other| OrchestratorCommit[Orchestrator: Human]
+    
+    Captain -->|Generates Split Commits| PR[GitHub Pull Request]
+    Coders -->|Generates Split Commits| PR
+    Auditor -->|Generates Split Commits| PR
+    OrchestratorCommit -->|Generates Split Commits| PR
+    
+    PR -->|Halts at Phase Boundary| CodexGate{Codex Review Gate}
+    CodexGate -->|Approved| Merge[Merged to main]
+    Merge -->|Updates Status| Cockpit
+```
 
 ---
 
-## How it works
+## 🤖 The Multi-Agent Roster
 
-The harness follows a **local-pilot + Warren-workers + Codex-review** model:
+Work in the cockpit is fanned out to a roster of specialized agent identities mapped to distinct sandboxed runtimes:
 
-- **Warren** is a self-hosted control plane for **sandboxed coding agents**. Workers run headless (`claude --prompt` inside a `bwrap` sandbox), get a scoped task, do real tool-using work, commit, and return their output as a **branch / PR** — never auto-merged. Warren's plan-run coordinator drives serial, dependency-aware execution server-side and resumes idempotently.
-- **The local pilot** is the orchestrator's seat: it translates intent into Warren HTTP calls (via `scripts/wr-*.sh` / the SDK), dispatches and steers runs, streams their events, and maintains the living state surface. The operator never types a Warren command or watches a separate dashboard.
-- **The Codex review gate** sits at phase boundaries: before a phase-closing merge, a non-author-biased reviewer (Codex) inspects the cumulative diff. The pilot **holds** the gate PR and merges only if the review is clean — the one merge that is never silent.
-
-The result is a control plane where parallel, long-running, sandboxed agent work stays observable, steerable, and reviewable from a single seat.
+| Agent Identity | Role | Warren Runtime | Key Responsibility | Git Attribution Casing |
+| :--- | :--- | :--- | :--- | :--- |
+| **KevinGastelum** | **Orchestrator** | *(Human)* | Fleet steering, adversarial review, and ultimate merge authority. | `Kevin Gastelum` |
+| **LucraTitan** | **Captain** | `claude-code` | Orchestrates documentation, system designs, and team cards. | `LucraTitan` |
+| **K-bot-T1** | **Coder-A** | `planner` | Software development, planning, and code refinement. Alternates with Coder-B. | `K-Bot-T1` |
+| **K-bot-T2** | **Coder-B** | `sapling` | VCS orchestration, stacked diffs, and codebase construction. | `K-bot-T2` |
+| **K-bot-T3** | **Auditor** | `pi` | Test case validation, assertion hardening, and automated verification. | `K-bot-T3` |
 
 ---
 
-## Safety
+## 🗺️ SDD & Project Roadmap
 
-- Warren output is **always a branch/PR for human review** — never auto-merged. Treat agent output as untrusted until reviewed.
-- Secrets never leave the box: the Warren API token and `.env` are never printed, committed, or pasted. A local guard hook (`.claude/hooks/warren-guard.js`) backstops obvious leaks and project deletes (best-effort, fails open).
-- Destructive work and cron triggers require explicit human approval. Agent-authored commits are attributed to **Kay / K-Bot-T1**; human commits to the repo owner.
+This project is built using **Seeds-Driven Development (SDD)**. Large phases are decomposed into serial, dependency-aware plans ([.seeds/plans.jsonl](.seeds/plans.jsonl)) executed autonomously within Warren sandboxes.
 
-See `docs/warren-integration/` for the full design and ground-truth report.
+### 🏁 Milestones & Completed Phases
+
+- [x] **Phase 0: Architecture & Environment Verification**
+  - [x] Verify local Warren Docker container v0.7.8 readiness
+  - [x] Audit token scopes and verify GitHub API integration ([PHASE-0-REPORT.md](docs/warren-integration/PHASE-0-REPORT.md))
+- [x] **Phase 1: Multi-Agent Topology & Toolchain Setup**
+  - [x] Configure bot roster & role metadata ([.team/roster.json](.team/roster.json))
+  - [x] Deploy custom git-commit path-router ([team-commit.ts](.team/team-commit.ts))
+- [x] **Phase 2: Pilot-Layer Artifacts** — *Executed via Plan `pl-a703`*
+  - [x] **Seed `operation-Trismegistus-4b5c`**: Create live status dashboard & session guides (PR #6, Merged)
+  - [x] **Seed `operation-Trismegistus-99f4`**: Standardize operator intent vocabulary & `just status` task (PR #7, Merged)
+  - [x] **Seed `operation-Trismegistus-45e5`**: Establish Phase-Close Gate & run cumulative Codex diff review (PR #8, Merged)
+- [x] **Phase 3: Canopy Agent Prompts Hardening** — *Executed via Plan `pl-5b3d`*
+  - [x] **Seed `operation-Trismegistus-4294`**: Harden system prompts for all 4 agent roles ([agents/*.md](agents/)) and document behavioral constraints (PR #9, Merged)
+  - [x] **Seed `operation-Trismegistus-71be`**: Setup Phase 3 Completion marker & gate verification (PR #10, Merged)
+- [ ] **Phase 4: Multi-Agent Parallel Dashboard Execution** *(Next up)*
+  - [ ] Implement live visual dashboard interface for active runs
+  - [ ] Set up concurrent wave automation with rate-limit dampening
+
+---
+
+## ⚡ Agentic Superpowers
+
+### 1. Git-Native Path Routing (`team-commit.ts`)
+To make multi-agent collaboration visible and authentic, this repo features a custom-built routing engine [.team/team-commit.ts](.team/team-commit.ts) written in Bun & TypeScript.
+* **Smart Decomposition**: The router analyzes the unstaged changeset, normalizes paths, and partitions the files into disjoint, role-specific buckets.
+* **Multi-Author Attribution**: It resets the git index and commits each bucket in dependency order (`Orchestrator -> Coder -> Auditor -> Captain`) using the specific agent's name and GitHub noreply email (e.g. `<id>+<login>@users.noreply.github.com`).
+* **Realistic Timeline**: A single feature branch modifying code, tests, and documentation automatically surfaces in GitHub's commit log and contributor graphs as a collaborative effort between **Coder-A**, **Auditor**, and the **Captain**.
+* **Atomic Escape Hatch**: Runs with `--solo` to stage all modifications together under the dominant bucket's author.
+
+### 2. Git-Native Issue Tracking (`Seeds`)
+Project plans (`.seeds/`) are structured, machine-readable JSONL files representing dependency-aware execution graphs.
+* Agents prime context using `sd prime` at session start, allowing them to read and transition issues (open → in-flight → merged) autonomously.
+* Plan boundaries act as human gates, enabling safe, idempotent resume points for long-running processes.
+
+### 3. Persistent Project Memory (`Mulch`)
+To eliminate context drift across ephemeral agent sandboxes, we utilize a local knowledge persistence engine (`Mulch`).
+* Agents run `ml prime` to load active conventions, structural constraints, and past design decisions directly into their prompt context.
+* On session completion, agents run `ml record` to capture new engineering heuristics, ensuring the workspace evolves its own internal expertise index.
+
+### 4. Headless Sandbox Isolation
+All code-generation runs execute inside sandboxed container nodes (via `Warren`), wrapped with a strict project contract:
+* **Quality Gate**: Sandboxes run a pre-commit validation command (`bash -n scripts/*.sh`) to ensure code complies before committing.
+* **Auto-Merge Gating**: High-risk changes (e.g., CI workflows, credentials, deploy configs) are guarded, forcing manual reviews while standard features can auto-merge after verified by an auditor agent.
+
+---
+
+## 🛠️ Cockpit Commands
+
+The dashboard and routing features are exposed through a simple `justfile` interface:
+
+* **`just status`**: Performs a health check on the local Warren API, queries active Seeds, and displays the current [STATUS.md](STATUS.md).
+* **`just commit "msg"`**: Automatically routes, authors, splits, and commits changed files to their respective team agents.
+* **`just commit-push "msg"`**: Runs the team commit router and pushes the generated branches to GitHub.
+* **`just commit-solo "msg"`**: Commits all changes under the dominant developer's identity.
+* **`just team-status`**: Previews the planned commits and author routing for the current workspace without making changes.
+* **`bash scripts/team-init.sh [target-dir]`**: Installs the portable routing system, roster configuration, and just recipes into any target git repository.
+
+
